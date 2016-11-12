@@ -1,0 +1,35 @@
+{% extends 'budget/dashboard.html' %}
+{% load staticfiles %}
+{% block modals %}
+<div id="uploadErrorModal" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">X</button>
+            <h1>Upload CSV</h1>
+        </div>
+        <div class="modal-body">
+            {% if errors %}
+              ERROR: {{ errors }}
+            {% else %}
+              Upload successful.
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+              Ok
+            </button>
+          </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_js2 %}
+
+<script type="text/ecmascript">
+$(document).ready(function() {
+    $('#uploadErrorModal').modal('show');
+});
+</script>
+{% endblock %}

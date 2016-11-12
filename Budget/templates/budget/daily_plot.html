@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<div id="dailyPlot" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+{% endblock %}
+{% block custom_js %}
+<script src="{% static 'highcharts/js/highcharts.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+<script type="text/ecmascript">
+
+$(function () {
+    var chartDataUrl = "{% url 'budget:dailyBalance' %}";
+    dailyPlot('#dailyPlot', chartDataUrl);
+});
+</script>
+{% endblock %}
+

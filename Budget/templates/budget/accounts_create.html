@@ -1,0 +1,21 @@
+{% extends 'accounts.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block main %}
+    <h1><span class="fa fa-plus"></span> Konto hinzufügen </h1>
+   {% crispy form %}
+{% endblock %}
+
+{% block customjs %}
+<script type="text/javascript">
+$(function () {
+    // Sets the value of the submit_button_type field if the 'Submit & Add
+    // Another button is clicked.
+    $('#submit-id-submit_and_add').click(function() {
+        $('#id_submit_button_type').val('submit_and_add');
+    });
+});
+
+</script>
+{% endblock %}

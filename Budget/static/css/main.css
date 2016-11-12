@@ -1,0 +1,80 @@
+
+body {
+  margin-top: 20px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.month {
+  /*background: url("sprite.png") 15px 13px no-repeat;*/
+  background-color: rgb(255,255,255);
+  display: block;
+  padding: 10px;
+  padding-left: 32px;
+  margin: 0;
+  color: #000;
+  text-decoration: none;
+  font-weight: normal;
+  border-bottom: 1px solid rgba(128, 10, 85, 0.5);
+  text-shadow: 1px 1px 1px rgba(114,114,114, 0.39);
+}
+
+.month span {
+  float: right;
+}
+
+.yearDiv {
+  background-color: rgb(228,10,85);
+  background-image: linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -o-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -moz-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -webkit-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -ms-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  display: block;
+  padding: 10px;
+  padding-left: 32px;
+  margin: 0;
+  color: #fff;
+  text-decoration: none;
+  font-weight: normal;
+  border-bottom: 1px solid rgba(128, 10, 85, 0.5);
+  text-shadow: 1px 1px 1px rgb(128,10,85);
+}
+.yearDiv:hover { background: rgb(228,10,85); }
+.yearDiv.open  { background: rgb(255,70,120); }
+.yearDiv.open { background-position: 13px -25px; }
+
+.jQueryUI button {
+  /*background: url("sprite.png") 15px 13px no-repeat;*/
+  background-color: rgb(228,10,85);
+  background-image: linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -o-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -moz-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -webkit-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  background-image: -ms-linear-gradient(bottom, rgb(228,10,85) 14%, rgb(255,36,111) 57%);
+  float: left;
+  width: 100%;
+  display: block;
+  padding: 10px;
+  padding-left: 32px;
+  margin: 0;
+  color: #fff;
+  text-decoration: none;
+  font-weight: normal;
+  border-bottom: 1px solid rgba(128, 10, 85, 0.5);
+  text-shadow: 1px 1px 1px rgb(128,10,85);
+}
+
+.jQueryUI button:hover { background: rgb(228,10,85); }
+.jQueryUI button.open  { background: rgb(255,70,120); }
+.jQueryUI button.open a { background-position: 13px -25px; }
+
+.editrow {
+  border: solid 1px #ccc;
+  margin: 0 3px;
+  padding: 2px;
+}
+
+.highcharts-background {
+  opacity : 0;
+}

@@ -1,0 +1,52 @@
+{% extends "Budget/dashboard.html" %}
+
+{% block title %} my personal budget {% endblock %}
+
+{% block main %}
+      <div class="panel panel-default">
+        <div id="chart_panel" class="panel-body" 
+            style="width:50%"></div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+<script src="{{ STATIC_URL }}highcharts/js/highcharts.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+    // Glucose Average by Day chart
+     var Pi = {
+        chart: {
+            renderTo: 'chart_panel',
+        },
+        title: {text: 'Ausgaben'},
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Ausgaben',
+        }]
+    };
+
+    var chartDataUrl = "{% url 'budget:getChartData' %}";
+    $.getJSON(chartDataUrl,
+        function(data) {
+            Pi.series[0].data = data;
+            var chart = new Highcharts.Chart(Pi);
+    });
+
+} );
+</script>
+
+{% endblock %}

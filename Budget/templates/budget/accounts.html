@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+{% if account_list %}
+
+<div class="container">
+<h1 class="page-header">Accounts</h1>
+<table class="table">
+    <tr>
+      <th> Name </th>
+      <th> IBAN </th>
+      <th> Description </th>
+      <th> Balance </th>
+    </tr>
+  {% for account in account_list %}
+  <tr>
+    <td> {{account.name}} </td>
+    <td> {{account.IBAN}} </td>
+    <td> {{account.description}} </td>
+    <td> {{account.balance}} </td>
+    <td> <a class="btn btn-default" href="">
+    <span class="glyphicon glyphicon-pencil"></span></a> </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+  <p>Keine Konten vorhanden. Bitte leg ein neues Konto an. </p>
+{% endif %}
+
+  <!-- Button for Account creation modal -->
+  <button type="button" class="btn btn-primary btn-log" data-toggle="modal" 
+   data-target="#CreateAccountModal">
+    Add Account 
+  </button>
+</div>r
+
+<!-- Modal for Account creation -->
+<div class="modal fade" id="CreateAccountModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"
+        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="AccountModalLabel"> Add account </h2>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        {% crispy form %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,57 @@
+import csv, decimal, re
+from datetime import datetime
+
+from Budget.models import Transaction, Category, Account
+from Budget.lib.assign_categories import assignCat
+import logging
+logger = logging.Logger(__name__)
+
+def csv_handler(f, User):
+	reader = csv.reader(f, delimiter=';')
+	next(reader, None)
+	for row in reader:
+
+		# Complete if there exists no name --> Bank stuff
+		if row[5] == '':
+			row[5] = 'Konto Gebühren/Zinsen'
+
+		# Change messy csv file to good date format
+		d = row[1]
+		row[1] = d[:-2] + "20" + d[-2:] 
+
+		assignCat
+
+		# Check for account
+		acc = Account.objects.filter(number=row[0]).first()
+		if not acc:
+			return 'Account not found'
+
+		# Create new transaction if not already present
+		objT, boolT = Transaction.objects.get_or_create(
+			user = User,
+			account = acc,
+			date = str(datetime.strptime(row[1], "%d.%m.%Y").strftime("%Y-%m-%d")),
+			ref = row[4],
+			opp_name = row[5],
+			opp_account = row[6],
+			amount = decimal.Decimal(row[8].replace(',','.')),
+			currency = row[9],
+		)
+		objT.save()
+		# if bol == True:
+			
+		# 	# Global balance
+		# 	#BalA = Balance.objects.get(name='Global', account=row[0])
+		# 	#BalA.bal += decimal.Decimal(row[8].replace(',','.'))
+		# 	#BalA.save()
+
+		# 	# Monthly balance
+		# 	obj2, bol2 = Balance.objects.get_or_create(
+		# 		name = str(datetime.strptime(row[1], "%d.%m.%Y").strftime("%Y-%m")),
+		# 		account = row[0],
+		# 		cur = row[9])
+		# 	obj2.bal = decimal.Decimal(obj2.bal)
+		# 	obj2.bal += decimal.Decimal(row[8].replace(',','.'))
+		# 	obj2.save()
+	assignCat(User)
+	return

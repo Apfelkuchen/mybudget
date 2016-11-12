@@ -1,0 +1,180 @@
+<!-- Load extensions -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block main %}
+
+<!-- Begin Page Content -->
+<div class="container">
+  <h1 class="page-header"> Dashboard </h1>
+  <!-- Daily Balance Plot -->
+  <div class="clod-md-10">
+    <div id="dailyPlot"
+         style="min-width: 310px; height: 200px; margin: 0 auto">
+  </div>
+  <!-- Categories Plot -->
+  <div class="row placeholders">
+    <div class="col-md-5">
+      <div id="chart_panel_l" 
+           style="height: 300px;display: inline-block; margin: 0 auto"></div>
+    </div>
+    <div class="col-md-5">
+      <div id="chart_panel_r" 
+           style="height: 300px;display: inline-block"></div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  {% if accounts %}
+    {% for acc_name, acc in accounts.items %}
+      <h2 class="page-header"> Account: {{acc_name }} | Balance: 
+        <span id="{{ acc.id }}" class="balance" contenteditable="true">
+          {{ acc.bal }}
+        </span> €
+      </h2>
+   {% endfor %}
+  {% endif %}
+  <div id="CategoryTransactionDIV"></div>
+  {% if trans_list %}
+    {% for year, val1 in trans_list.items %}
+      <div data-toggle="collapse" data-target="#DIV{{year|date:'Y'}}" 
+           class="yearDiv"> 
+        <span class="col-md-2"> {{ year|date:"Y" }} </span>
+          <button type="button" class="btn btn-primary btn-xs 
+          dateTrans no-collapsable" data-date="{{ year|date:'Y'}}"> 
+            Plot 
+          </button>
+          <button class="btn btn-primary btn-xs no-collapsable trans" 
+                  href="{% url 'budget:getTYear' year|date:'Y' %}" 
+                  data-date="{{ year|date:'Y'}}"> Transactions </button>
+        <span style="float:right"> {{ val1.bal }} &euro; </span> 
+      </div>
+      <div id="{{ year|date:'Y'}}DIV"> </div>
+      <div id="DIV{{ year|date:"Y" }}" class="collapse" >
+      {% for month, values in val1.months.items %}
+        <div class="col-md-12 month">
+          <span class="col-md-2" style="float:left"> {{ month|date:"F" }} 
+          </span>
+          <button type="button" class="btn btn-primary btn-xs dateTrans" 
+                  data-date="{{ month|date:'Y-m'}}"> Plot </button> 
+          <span> {{ values.bal }} &euro; </span>
+          <button type="button" class="btn btn-primary btn-xs trans" 
+                  data-date="{{ month|date:'Y-m'}}" 
+                  href="{% url 'budget:getTMonth' month|date:'Y-m' %}"> 
+            Transactions 
+          </button>
+        </div>
+        <div id="{{ month|date:'Y-m'}}DIV"> </div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+  {% else %}
+      <p> No balances are available. </p>
+  {% endif %}
+  <table id="jqGrid"></table>
+  <div id="jqGridPager"></div>
+</div>
+
+{% block modals %}
+{% endblock %}
+
+{% endblock %} 
+
+{% block custom_js %}
+<script src="{% static 'highcharts/js/highcharts.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+<script type="text/ecmascript">
+
+var lastsel;
+var current; // remove in final version
+var openTable;
+var grid = '#jqGrid'; 
+var pager = '#jqGridPager';
+var datestringR = '';
+var editUrl = "{% url 'budget:changeT' %}";
+var indexUrl = "{% url 'budget:index' %}";
+
+$(document).ready(function() {
+  // Get transactions
+  $(".trans").click(function (e) {
+    // Prevent the page to follow link
+    e.preventDefault();
+    // Delete old table
+    $(grid).jqGrid("GridUnload");
+    $(pager).remove();
+    $(grid).remove();
+    // Looks if table is already present and creates DIV + datatable if not 
+    if(current !== $(this).attr('data-date')) {
+      // Initialize div
+      current = $(this).attr('data-date');
+      $("#"+$(this).attr('data-date')+"DIV").append("<div class='jQueryUI'><table id="+grid.substring(1)+"></table><div id="+pager.substring(1)+"></div></div>");
+      buildTable(grid, $(this).attr('href'), editUrl);
+      }
+    // Deletes table if already present (double click on that entry)
+    else { 
+      current = ''; 
+      $("#"+$(this).attr('data-date')+"DIV").append("<div class='jQueryUI'><table id="+grid.substring(1)+"></table><div id="+pager.substring(1)+"></div></div>");
+    }
+    });
+
+  
+ // Ausgaben Chart
+    var chartDataUrl = "{% url 'budget:getChartData' 'Ausgaben' %}";
+    var tableDataUrl = "{% url 'budget:index' %}" + "Trans/category/";
+    var pi_chartR = pi_chart('chart_panel_r', chartDataUrl, 'Ausgaben', 
+                          '#CategoryTransactionDIV', grid, tableDataUrl);
+
+    // Einnahmen Chart                      
+    var chartDataUrl = "{% url 'budget:getChartData' 'Einnahmen' %}";
+    var pi_chartL = pi_chart('chart_panel_l', chartDataUrl, 'Einnahmen', 
+                          '#CategoryTransactionDIV', grid, tableDataUrl);
+    // Time Chart 
+    var budget_over_time = time_chart('dailyPlot',
+                                      "{% url 'budget:dailyBalance' %}",
+                                      'Budget over time',
+                                      '#CategoryTransactionDIV', grid, 
+                                      "{% url 'budget:index' %}" + "Trans/", 
+                                      pi_chartL, pi_chartR);
+                               
+    $(".dateTrans").click(function (e) {
+    datestringR = $(this).attr('data-date');
+    var chartDataUrl = "{% url 'budget:getChartData' 'Ausgaben'%}"+datestringR;
+    $.getJSON(chartDataUrl,
+        function(data) {
+            pi_chartR.title.text = "Ausgaben " + datestringR;
+            pi_chartR.series[0].setData(data,true);
+    });
+
+    var chartDataUrl = "{% url 'budget:getChartData' 'Einnahmen'%}"+$(this).attr('data-date');
+    $.getJSON(chartDataUrl,
+        function(data) {
+            pi_chartL.series[0].setData(data, true);
+            //var chartL = new Highcharts.Chart(pi_chartL);
+    });
+    });
+});
+
+
+// Fix Bug
+$('.no-collapsable').on('click', function (e) {
+    e.stopPropagation();
+});
+
+// Check if balance has changed
+var acc_bal = $('.balance').text();
+$( '.balance' ).blur(function(e) {
+  if ($(this).text() != acc_bal) {
+    var acc_id = $(this).attr('id');
+    var acc_bal = $(this).text();
+    $.get("{% url 'budget:changeBalance' %}", 
+          {account_id: acc_id,
+           account_bal: acc_bal
+          },
+         function(response_data){
+         $("#"+acc_id).text(response_data);
+         });
+  }
+});
+</script>
+{% block custom_js2 %} {% endblock %}
+{% endblock %}
+

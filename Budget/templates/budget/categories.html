@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="page-header"> Categories </h1>
+        <div class="jQueryUI" >
+            <table id="jqGrid_Cat"></table>
+            <div id="jqGridPager_Cat"></div>
+        </div>
+    <a href="{% url 'budget:assignCategories' %}"> Go through transaction and assign categories  </a>   
+</div>
+{% endblock %} 
+
+
+
+{% block custom_js %}
+<script type="text/ecmascript">
+var lastsel;
+var current;
+
+var grid= '#jqGrid_Cat'; // ID of the grid
+var pager = '#jqGridPager_Cat'; // ID of the grid pager
+
+var editOptions = {
+        keys: true,
+        aftersavefunc: function() {
+            $(grid).jqGrid('setGridParam',{datatype:'json'}).trigger("reloadGrid");
+        },
+    };
+
+$(document).ready(function() {
+    // Get transactions
+    // Delete old table
+
+    // Load data
+    $(grid).jqGrid(
+      {
+      url: "{% url 'budget:getCat' %}",
+      mtype: "GET",
+      datatype: "json",
+      colModel: [
+        { label: 'Category', name: 'category', width: 150, editable:true, sorttype:'text' },
+        { label: 'Regular Expressions', name: 'regexp', width: 100, editable:true},
+        { index: 'id', label: 'id', name: 'id', width: 10},
+      ],
+     viewrecords: true,
+     autowidth: true,
+     autoheight: true,
+     loadonce: true,
+     rowNum: 1000,
+     pager: pager,
+     sortname: 'Date',
+     sortorder: "desc",
+     onSelectRow: function(id) { 
+        if(id && id!==lastsel){ jQuery(grid).jqGrid('restoreRow',lastsel); jQuery(grid).jqGrid('editRow', id, true); lastsel=id; } }, 
+     editurl: "{% url 'budget:changeCategory' %}",
+      //editData: { csrfmiddlewaretoken: '{{ csrf_token }}'},
+    });
+    $(grid).jqGrid('navGrid',pager,{edit:false,add:false,del:true});
+    $(grid).jqGrid('inlineNav',pager,{
+        addParams : {
+            addRowParams: editOptions
+        },
+        editParams: editOptions
+    });
+});
+</script>
+{% endblock %}

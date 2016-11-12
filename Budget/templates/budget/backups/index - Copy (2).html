@@ -1,0 +1,51 @@
+<head>
+	{% load staticfiles %}
+	<!-- The jQuery library is a prerequisite for all jqSuite products -->
+    <script type="text/ecmascript" src="{% static 'js/jquery-1.11.0.min.js' %}"></script> 
+    <!-- This is the Javascript file of jqGrid -->   
+    <script type="text/ecmascript" src="{% static 'js/jquery.jqGrid.min.js' %}"></script>
+    <!-- Localization -->
+    <script type="text/ecmascript" src="{% static 'js/i18n/grid.locale-en.js' %}"></script>
+    <!-- A link to a jQuery UI ThemeRoller theme, more than 22 built-in and many more custom -->
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/jquery-ui.css' %}" />
+    <!-- The link to the CSS that the grid needs -->
+	<link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/ui.jqgrid.css' %}">
+  <script type="text/ecmascript" src="{% static 'js/jquery.cookie.js' %}"></script> 
+
+    <script src="../src/jquery.collapse.js"></script>
+    <script src="../src/jquery.collapse_storage.js"></script>
+    <script src="../src/jquery.collapse_cookie_storage.js"></script>
+
+    <meta charset="utf-8" />
+    <title> Testing </title>
+</head>
+
+
+
+ <h1> my personal budget </h1>
+<div id="Testing" > </div>
+
+
+{% if trans_list %}
+    <div data-role="collapsible" data-inset="false">
+    {% for year, val1 in trans_list.items %}
+    	<h2> <a id="{{ year|date:"Y" }}" class="trans" href="{% url 'budget:getTYear' year|date:'Y' %}"> {{ year|date:"Y" }} {{ val1.bal }} </a> </h2>
+        <div id="{{ year|date:'Y'}}DIV"> </div>
+    		<ul data-role="listview">
+    		{% for month, values in val1.months.items %}
+        		<li> <a id="{{ month|date:'Y-m'}}" class="trans" href="{% url 'budget:getTMonth' month|date:'Y-m' %}"> {{ month|date:"F" }} {{ values.bal }} </a>
+            </li> 
+            <div id="{{ month|date:'Y-m'}}DIV"> </div>
+        	{% endfor %}
+        	</ul>
+    {% endfor %}
+  </div>
+{% else %}
+    <p>No balances are available.</p>
+{% endif %}
+
+<table id="jqGrid"></table>
+<div id="jqGridPager"></div>
+
+  <!-- Document ready -->
+<script type="text/ecmascript" src="{% static 'js/DRF_index.js' %}"></script> 
