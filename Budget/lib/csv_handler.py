@@ -5,6 +5,7 @@ import csv
 from Budget.models import Transaction, Category, Account
 from Budget.lib.assign_categories import assignCat
 import pandas as pd
+from io import StringIO
 
 ## Debugging --> REMOVE ##
 import logging
@@ -25,9 +26,9 @@ def csv_handler(f, user, account):
         account:    ['account.id'] Account id used for the transactions
     """
     User = user
-
+    f_pd = f.read().decode('iso-8859-1')  # iso-8859-1
     # iso-8859-1 because of Sparkasse. Should change this!
-    reader = pd.read_csv(f, delimiter=';', encoding='iso-8859-1', )
+    reader = pd.read_csv(StringIO(f_pd), delimiter=';')
     acc = Account.objects.get(id=account)
 
     run_bal = 0
@@ -57,7 +58,6 @@ def csv_handler(f, user, account):
             run_bal += float(row[8].replace(',', '.'))
         objT.save()
 
-    print(run_bal)
     # Update Balance
     curr_bal = float(acc.balance)
     acc.balance = decimal.Decimal(curr_bal + run_bal)

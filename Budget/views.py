@@ -89,7 +89,7 @@ def getDailyBalance(request):
 def upload(request):
     if request.method == 'POST':
         # Upload files
-        acc =  request.POST['sel_acc']
+        acc = request.POST['sel_acc']
         for _, file in request.FILES.items():
             response = csv_handler(file, request.user, acc)
             return upload_error(request, response)
